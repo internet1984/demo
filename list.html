@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        color: #fff;
+        opacity: 0.8;
+      }
+      li {
+        margin: 1px;
+      }
+      .blue {
+        background-color: blue;
+      }
+      .red {
+        background-color: red;
+      }
+      .y::after {
+        content: "我是Y";
+      }
+      .n:after {
+        content: "我是N";
+      }
+    </style>
+  </head>
+  <body>
+    <ul>
+      <li class="blue"><div class="y"></div></li>
+      <li class="blue"><div class="n"></div></li>
+      <li class="blue"><div class="n"></div></li>
+      <li class="blue"><div class="y"></div></li>
+      <li class="red"><div class="n"></div></li>
+      <li class="red"><div class="y"></div></li>
+      <li class="blue"><div class="n"></div></li>
+      <li class="blue"><div class="n"></div></li>
+      <li class="red"><div class="y"></div></li>
+      <li class="red"><div class="y"></div></li>
+    </ul>
+  </body>
+</html>
