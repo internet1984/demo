@@ -1,0 +1,362 @@
+@charset "UTF-8";
+body,
+div,
+dl,
+dt,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+li,
+ol,
+code,
+form,
+fieldset,
+legend,
+input,
+textarea,
+p,
+blockquote,
+th,
+td,
+header,
+hgroup,
+nav,
+section,
+article,
+aside,
+footer,
+figure,
+figcaption,
+menu,
+button {
+  margin: 0;
+  padding: 0;
+  font-family: "SF Pro Text", "SF Pro Icons", "PingFang SC";
+}
+body {
+  font-size: 16px;
+  min-height: 12rem;
+  background-size: cover;
+}
+
+.hidden {
+  display: none;
+}
+#show,
+.show {
+  display: block !important;
+}
+
+.tipsEmpty {
+  position: absolute;
+  top: 1.9rem;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #666;
+}
+
+#returnAccount {
+  margin: 0.2rem 0.3rem;
+  padding: 0.1rem 0.3rem;
+  position: relative;
+  display: block;
+  z-index: 2;
+  width: 1rem;
+  font-size: 0.3rem;
+  text-decoration: none;
+  font-weight: bold;
+  color: #000 !important;
+  &::after {
+    position: absolute;
+    top: 0.39rem;
+    left: 0rem;
+    content: " ";
+    display: block;
+    width: 0.2rem;
+    height: 2px;
+    background-color: #000;
+    transform: rotate(45deg);
+  }
+  &::before {
+    position: absolute;
+    top: 0.26rem;
+    left: 0rem;
+    content: " ";
+    display: block;
+    width: 0.2rem;
+    height: 2px;
+    background-color: #000;
+    transform: rotate(135deg);
+  }
+}
+
+.footer {
+  background-color: rgba(225, 225, 225, 0.5);
+  overflow: hidden;
+  height: 1rem;
+  line-height: 1rem;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  #sumitemy {
+    float: right;
+    color: #fe9c00;
+    font-weight: bold;
+    &::before {
+      content: "已收￥";
+      font-weight: normal;
+      font-size: 0.25rem;
+    }
+    display: inline-block;
+  }
+  #sumArrTotal {
+    float: right;
+    font-weight: bold;
+    &::before {
+      content: "合计￥";
+      font-weight: normal;
+      font-size: 0.25rem;
+    }
+    display: inline-block;
+    padding: 0 0.4rem;
+  }
+  #sumTodo {
+    float: right;
+    font-weight: bold;
+    &::before {
+      content: "未收￥";
+      font-weight: normal;
+      font-size: 0.25rem;
+    }
+    display: inline-block;
+    padding: 0 0.4rem;
+  }
+}
+
+.pageList {
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.3rem;
+  .warpper {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .choice {
+    position: absolute;
+    top: 0.2rem;
+    left: 50%;
+    width: 4rem;
+    text-align: center;
+    margin-left: -2rem;
+    padding-bottom: 0.2rem;
+    .active {
+      color: #fff;
+      border: 1px solid #fe9c00;
+      background-color: #fe9c00;
+    }
+    span {
+      border: 1px solid #eee;
+      padding: 0.05rem 0.2rem;
+      margin: 0 3px;
+      display: inline-block;
+      background-color: #eee;
+      border-radius: 0.5rem;
+      font-size: 0.3rem;
+    }
+  }
+  #list {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-top: 0.1rem;
+    height: calc(100vh - 2.2rem);
+    position: relative;
+    z-index: 4;
+    padding-left: 30px;
+    //padding-left: 40px;
+    //list-style-type: decimal-leading-zero;
+  }
+  li {
+    height: 1.3rem;
+    line-height: 0.7rem;
+    width: 100%;
+    background-color: #fff;
+    font-size: 0.3rem;
+    position: relative;
+    margin-bottom: 1px;
+    list-style-type: decimal-leading-zero;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    //margin-left: 30px;
+    color: #666;
+    font-size: 9px;
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -10%;
+      width: 400%;
+      height: 200%;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      -webkit-transform: scale(0.5);
+      -ms-transform: scale(0.5);
+      transform: scale(0.5);
+      -webkit-transform-origin: left top;
+      -ms-transform-origin: left top;
+      transform-origin: left top;
+      border-bottom: 1px solid #ddd;
+      pointer-events: none;
+    }
+  }
+  .list-li[name="hidden"] {
+    display: none;
+  }
+  .itemy {
+    .periodDateGetItem {
+      display: none;
+    }
+    .arrTotal-current::after,
+    .arrTotal::after {
+      font-size: 0.25rem;
+      font-weight: normal;
+      content: "已收";
+      color: #666;
+      position: absolute;
+      right: 0;
+      bottom: -0.4rem;
+      width: 1rem;
+      text-align: right;
+    }
+    .roomNamesubstr,
+    .arrTotal-current,
+    .arrTotal {
+      color: #fe9c00;
+    }
+    .arrTotal-current::before,
+    .arrTotal::before {
+      font-size: 0.25rem;
+      content: "￥";
+      color: #fe9c00;
+    }
+    color: #fe9c00;
+  }
+  .item,
+  .itemn {
+    .stateTime {
+      display: none;
+    }
+    .arrTotal-current::after,
+    .arrTotal::after {
+      font-size: 0.25rem;
+      font-weight: normal;
+      content: "未收";
+      color: #666;
+      position: absolute;
+      right: 0;
+      bottom: -0.4rem;
+      width: 1rem;
+      text-align: right;
+    }
+    .arrTotal-current::before,
+    .arrTotal::before {
+      font-size: 0.25rem;
+      content: "￥";
+      color: #000;
+    }
+  }
+
+  .left {
+    position: relative;
+    height: 1.3rem;
+    line-height: 1;
+    width: 100%;
+    float: left;
+    color: #000;
+    .roomName {
+      display: none;
+    }
+    .roomNamesubstr {
+      position: absolute;
+      left: 0.1rem;
+      top: 0.2rem;
+      font-size: 0.35rem;
+    }
+    .arrTotal-current,
+    .arrTotal {
+      position: absolute;
+      right: 0.4rem;
+      top: 0.2rem;
+      font-weight: bold;
+      font-size: 0.35rem;
+    }
+    .periodDateGetItem {
+      position: absolute;
+      left: 0.1rem;
+      bottom: 0.35rem;
+      font-size: 0.27rem;
+      color: #666;
+    }
+    .stateTime {
+      position: absolute;
+      left: 0.1rem;
+      bottom: 0.35rem;
+      font-size: 0.27rem;
+      color: #666;
+    }
+  }
+  .right {
+    position: absolute;
+    width: 4rem;
+    height: 1.3rem;
+    line-height: 1;
+    top: -1px;
+    overflow: hidden;
+    bottom: 0;
+    right: -4rem;
+    color: #000;
+    display: flex;
+    font-size: 0.35rem;
+    span {
+      display: inline-block;
+      flex: 1;
+      color: transparent;
+      margin: 0;
+      line-height: 1.3rem;
+      position: relative;
+      color: transparent;
+      &::before {
+        pointer-events: none;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        text-align: center;
+      }
+    }
+    .removeItem {
+      &::before {
+        content: "删除";
+      }
+      background-color: #fe3b30;
+    }
+    .roomStateY {
+      &::before {
+        content: "已收";
+      }
+      background-color: #fe9c00;
+    }
+    .roomStateN {
+      &::before {
+        content: "未收";
+      }
+      background-color: #bbb;
+    }
+  }
+}

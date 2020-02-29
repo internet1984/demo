@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - 移动端H5页面截图</title>
+  <link rel="stylesheet" href="style.css">
+  <script src='jquery.js'></script>
+  <script>
+    //页面所有元素加载完毕，执行
+    $(document).ready(function(){
+
+      //读取本地localStorage储存的用户名、密码
+      var stor = window.localStorage;
+      $("#demoName").val(stor.getItem("name"));
+
+
+      //点击“记住密码”
+      $("#remPassword").click(function(){
+        stor.name = $("#demoName").val();
+
+      });
+    })
+  </script>
+</head>
+<body>
+
+
+
+  累加储存数据至本地，当用户输入对应ID时，把对应数据调用出来，每次覆盖相对ID
+
+  <form action="" method="">
+    <span>用户名：</span><input type="text" id="demoName"/>
+    <!-- <br />
+    <span>密码：</span><input type="text" id="demoPassword"/>
+    <br />
+    <span>test：</span><input type="text" id="demoTest"/> -->
+
+    <br />
+    <button id="remPassword">登录</button id="remPassword"/>
+  </form>
+
+
+</body>
+</html>

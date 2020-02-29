@@ -1,0 +1,13 @@
+*{
+  font-size: 30px;
+}
+input{
+  border: 1px solid #000;
+  padding: 10px;
+  margin: 10px;
+  width: 80%;
+}
+#remPassword{
+  width: 80%;
+  height: 50px;
+}

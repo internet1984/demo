@@ -1,0 +1,434 @@
+doctype html
+html(data-use-rem='' manifest='demo.appcache')
+  head
+    meta(charset='UTF-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1')
+    meta(content='房租计算器', name='description')
+    link(rel='stylesheet', href='../css/list.css')
+    title 列表页面
+    script(src='js/moment.js')
+    script.
+      (function (doc, win) {
+        var docEl = doc.documentElement,
+          resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+          recalc = function () {
+            var clientWidth = docEl.clientWidth;
+            if (!clientWidth) return;
+            docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+          };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+        recalc();
+      })(document, window);
+
+      //滑动组件
+      //---------------------------------------------------------------------------------------
+      window.addEventListener('load', function() {
+      var initX; //触摸位置
+      var moveX; //滑动时的位置
+      var X = 0; //移动距离
+      var objX = 0; //目标对象位置
+
+      //滑动组件 window.addEventListener('touchstart'
+      //---------------------------------------------------------------------------------------
+      window.addEventListener('touchstart', function(event) {
+        //event.preventDefault();
+        var obj = event.target.parentNode;
+        if (obj.className == "list-li") {
+          initX = event.targetTouches[0].pageX;
+          objX = (obj.style.WebkitTransform.replace(/translateX\(/g, "").replace(/px\)/g, "")) * 1;
+        }
+        if (objX == 0) {
+            window.addEventListener('touchmove', function(event) {
+            //event.preventDefault();
+              var obj = event.target.parentNode;
+
+              if (obj.className == "list-li") {
+                moveX = event.targetTouches[0].pageX;
+                X = moveX - initX;
+                if (X >= 0) {
+                obj.style.WebkitTransform = "translateX(" + 0 + "px)";
+                //console.log("rrr");
+                } else if (X < 0) {
+                var l = Math.abs(X);
+                obj.style.WebkitTransform = "translateX(" + -l + "px)";
+                if (l > 80) {
+                  l = 80;
+                  obj.style.WebkitTransform = "translateX(" + -l + "px)";
+                }
+              }
+            }
+          });//addEventListener touchmove
+        } else if (objX < 0) {
+
+          window.addEventListener('touchmove', function(event) {
+            //event.preventDefault();
+            var obj = event.target.parentNode;
+            if (obj.className == "list-li") {
+              moveX = event.targetTouches[0].pageX;
+              X = moveX - initX;
+              if (X >= 0) {
+              var r = -30 + Math.abs(X);
+              obj.style.WebkitTransform = "translateX(" + r + "px)";
+
+              if (r > 0) {
+                r = 0;
+                obj.style.WebkitTransform = "translateX(" + r + "px)";
+              }
+              } else { //向左滑动
+              obj.style.WebkitTransform = "translateX(" + -4 + "rem)";
+
+              }
+            }
+          });
+        }//else if
+      })//window.addEventListener('touchstart'
+
+      //滑动组件 addEventListener touchend
+      //---------------------------------------------------------------------------------------
+      window.addEventListener('touchend', function(event) {
+          //event.preventDefault();
+          var obj = event.target.parentNode;
+          if (obj.className == "list-li") {
+            objX = (obj.style.WebkitTransform.replace(/translateX\(/g, "").replace(/px\)/g, "")) * 1;
+            if (objX > -40) {
+            obj.style.WebkitTransform = "translateX(" + 0 + "px)";
+            objX = 0;
+            } else {
+            obj.style.WebkitTransform = "translateX(" + -4 + "rem)";
+            objX = -80;
+            }
+          }
+        })
+      })//addEventListener touchend
+
+  body.pageList
+    .warpper
+      #returnAccount(onclick ="replaceDoc()") 返回
+      .choice
+        span#thisMonth.active 本月
+        span#lastMonth 上月
+      ol#list
+      .tipsEmpty ⊙﹏⊙ 暂无数据
+      .footer
+        #sumArrTotal 0
+        #sumitemy 0
+        #sumTodo 0
+    .hidden
+      #roomnumberValue
+      #roomStateCont n
+      #accomplishDate
+
+    script.
+      //跳转阻止后退到上个页面，没有历史记录
+      function replaceDoc(){
+          window.location.replace("index.html")
+      }   
+
+      //获取当前月份：英文月份,保存数据的时在房间号码前添加localStorage.setItem(getThisMonth+roomnumberValue，1.用于做检索 str.search
+      //--------------------------------------------------------------------------code2
+        var getThisMonth=new Date()
+        var month=new Array(12)
+        month[0]="Jan"//1月
+        month[1]="Feb"
+        month[2]="Mar"
+        month[3]="Apr"
+        month[4]="May"
+        month[5]="Jun"
+        month[6]="Jul"
+        month[7]="Aug"
+        month[8]="Sep"
+        month[9]="Oct"
+        month[10]="Nov"
+        month[11]="Dec"//12月
+        var getThisMonth = month[getThisMonth.getMonth()];//当前月份
+
+      //获取上月份：用了数组退一位的排序方式 Feb = 0，Mar=1 ...
+      //--------------------------------------------------------------------------code2
+        var getLastMonth=new Date()
+        var lastMonth=new Array(12)
+        lastMonth[0]="Dec"
+        lastMonth[1]="Jan"
+        lastMonth[2]="Feb"
+        lastMonth[3]="Mar"
+        lastMonth[4]="Apr"
+        lastMonth[5]="May"
+        lastMonth[6]="Jun"
+        lastMonth[7]="Jul"
+        lastMonth[8]="Aug"
+        lastMonth[9]="Sep"
+        lastMonth[10]="Oct"
+        lastMonth[11]="Nov"
+        var getLastMonth = lastMonth[getLastMonth.getMonth()];
+        
+      //到账时间,获取当前时间
+      //--------------------------------------------------------------------------code2
+        var formatdate=moment().subtract('months').format('YYYY/MM/DD HH:mm');
+        var accomplishDateS=moment().subtract('months').format('YYYYMMDDHHmmss');
+        function accomplishDate(){
+            document.getElementById("accomplishDate").innerText=formatdate;
+        }
+
+      //功能：保存数据setItem localStorage.setItem
+      //--------------------------------------------------------------------------code3
+      function setItem(){
+          //房号
+          var roomnumberValue = document.getElementById("roomnumberValue").innerText;
+          //是否已收租[9]
+          var roomStateCont = document.getElementById("roomStateCont").innerText;
+          //到账时间,收到钱的时间[10]
+          var accomplishDate = document.getElementById("accomplishDate").innerText;
+          //localStorage 获取 键 和值：获取指定房号的数据，输出数组，修改完 arrValue[9] arrValue[10]然后进行再次保存
+          var storage=window.localStorage;
+          for(var i=0;i<storage.length;i++){
+              //var key=storage.key(i);
+              var getItemkey=localStorage.getItem(roomnumberValue);//获取指定房号的数据roomnumberValue
+              var arrValue = getItemkey.split(',');
+          }
+          localStorage.setItem(roomnumberValue,arrValue[0]+","+arrValue[1]+","+arrValue[2]+","+arrValue[3]+","+arrValue[4]+","+arrValue[5]+","+arrValue[6]+","+arrValue[7]+","+arrValue[8]+","+roomStateCont+","+accomplishDate+","+arrValue[11]+","+arrValue[12]+","+arrValue[13],);
+      }
+
+      //getItemkey() 获取 键 和值
+      //--------------------------------------------------------------------------code4
+      function getItemkey(){
+          var storage=window.localStorage;
+          //localStorage 获取 键 和值
+          for(var i=0;i<storage.length;i++){
+              var key=storage.key(i);
+              var getItemkey=localStorage.getItem(key);
+              var arrValue = getItemkey.split(',');
+
+              //水总价计算
+              var arrWaterTotal = parseInt(arrValue[6]) - parseInt(arrValue[7]);
+              var sWaterTotal = arrWaterTotal * arrValue[8];
+              //电总价计算
+              var arrPowerTotal = parseInt(arrValue[3]) - parseInt(arrValue[4]);
+              var sPowerTotal = arrPowerTotal * arrValue[5];
+              //所有费用总价计算
+              var arrTotal = parseInt(arrValue[0])+parseInt(arrValue[1])+parseInt(arrValue[2])+sWaterTotal+sPowerTotal+parseInt(arrValue[13]);
+
+              //截取前三个字符
+              var string=key;
+              var keySubstr = string.substr(3,15);//截取后的房间号 Jun201 > 201
+              document.getElementById("list").innerHTML+=
+              "<li class=list-li><div class='left item"+arrValue[9]+"'><span class=roomName>"+key+"</span><span class=roomNamesubstr>"+keySubstr+"</span><span class=arrTotal>"+arrTotal+"</span><span class=periodDateGetItem>"+arrValue[12]+"</span><span class=stateTime>"+arrValue[10]+"</span></div><div class=right><span class=roomStateN>"+key+"</span><span class=roomStateY>"+key+"</span><span class=removeItem>"+key+"</span></div></li>";
+
+              //删除 removeItem 
+              var removeItem = document.getElementsByClassName("removeItem");
+              for (var l = 0;l < removeItem.length;l++) {
+                removeItem[l].onclick = function() {
+                  var room = this.innerText;
+                  var roomSubstr = room.substr(3,15);//截取后的房间号 Jun201 > 201
+                  if (confirm("确认删除"+roomSubstr+"房？")) {  
+                    localStorage.removeItem(room);
+                    this.parentNode.parentNode.setAttribute("style","height:0;overflow:hidden;");
+                    setTimeout(function(){
+                      location.reload()
+                    }, 200);
+                  }else{
+                    this.parentNode.parentNode.setAttribute("style","transform:translateX(0);transition-delay: .3s;");
+                  }
+                }
+              }
+
+              //已收钱 roomStateY
+              var roomStateY = document.getElementsByClassName("roomStateY");
+              for (var l = 0;l < roomStateY.length;l++) {
+                roomStateY[l].onclick = function() {
+                  document.getElementById("roomStateCont").innerText = "y";//用于数据保存accomplishDate()
+                  accomplishDate();//到账时间保存
+                  //获取未收钱房号,保存至roomnumberValue，执行setItem();
+                  //var room = this.innerText;
+                  document.getElementById("roomnumberValue").innerText = this.innerText;
+                  //console.log(this.innerText);
+                  this.parentNode.parentNode.firstElementChild.children[4].innerText =formatdate;
+                  this.parentNode.parentNode.firstChild.setAttribute("class","left itemy");
+                  this.parentNode.parentNode.setAttribute("style","transform:translateX(0);transition-delay: .3s;");
+                  //this.parentNode.parentNode.setAttribute("state","list-li itemy");
+                  setTimeout(function(){
+                    setItem();
+                    sumTodo();
+                  }, 100);
+                  sumitemy();
+                }
+              }
+
+              //未收钱 roomStateN
+              var roomStateN = document.getElementsByClassName("roomStateN");
+              for (var l = 0;l < roomStateY.length;l++) {
+                roomStateN[l].onclick = function() {
+                  document.getElementById("roomStateCont").innerText = "n";//用于数据保存accomplishDate()
+                  //获取未收钱房号,保存至roomnumberValue，执行setItem();
+                  //- var room = this.innerText;
+                  document.getElementById("roomnumberValue").innerText = this.innerText;
+                  //console.log(this.innerText);
+                  this.parentNode.parentNode.firstChild.setAttribute("class","left itemn");
+                  this.parentNode.parentNode.setAttribute("style","transform:translateX(0);transition-delay: .3s;");
+                  //this.parentNode.parentNode.setAttribute("state","list-li itemn");
+                  setTimeout(function(){
+                    setItem();
+                    sumTodo();
+                    location.reload(); 
+                  }, 100);
+                    sumitemy();
+                }
+              }
+          }
+      }getItemkey();
+
+      var leftfunction = document.getElementsByClassName("left");
+        //循环找
+        for (var i = 0; i < leftfunction.length; i++) {
+            //console.log(leftfunction[i]);
+            leftfunction[i].onclick=function() {
+              
+              var leftText = this.firstChild.innerText;
+              accomplishDate();
+              setTimeout(function(){
+                    var accomplishDate = document.getElementById("accomplishDate").innerText;
+                    localStorage.setItem("LastClick",leftText+","+accomplishDateS,);
+                    window.open('index.html','_self'); 
+              }, 100);
+            }
+        }
+          
+      //时间选择：本月&上月
+      //--------------------------------------------------------------------------code2
+        var thisMonth = document.getElementById("thisMonth");
+        var lastMonth = document.getElementById("lastMonth");
+        var roomName = document.getElementsByClassName("roomName");
+        var arrTotal = document.getElementsByClassName("arrTotal");
+
+        //写成函数给点击本月复用
+        function getThisMonthfunction(){
+            //循环找roomName
+            for (var i = 0; i < roomName.length; i++) {
+              //roomName[i].parentNode.parentNode.classList.remove("show");
+              roomName[i].parentNode.parentNode.setAttribute("name","hidden"); 
+              
+              //获得文本,作为检索内容
+              var str= roomName[i].innerText;
+              //检索,符合条件的 即getThisMonth
+              var dateSearch = str.search(getThisMonth);//getThisMonth变量定义为本月
+              roomName[i].parentNode.children[2].setAttribute("class","arrTotal");
+              //符合条件的添加show
+              if(dateSearch >= 0){
+                //roomName[i].parentNode.parentNode.classList.add("show");
+                roomName[i].parentNode.parentNode.setAttribute("name","show");
+                roomName[i].parentNode.children[2].setAttribute("class","arrTotal-current");//获得在父级里的第三个节点的文本
+                //roomName[i].parentNode.parentNode.setAttribute("name","retain"); 
+              }//if end
+            }
+            //循环找arrTotal,有否NaN，有就删除
+            for (var i = 0; i < arrTotal.length; i++) {
+              var arrText = arrTotal[i].innerText;
+              if (arrText === "NaN") {
+                arrTotal[i].parentNode.parentNode.remove();
+              }
+            }
+        }getThisMonthfunction();
+
+      //功能：月份选择，点击本月切换 本月
+      //--------------------------------------------------------------------------12
+      thisMonth.onclick=function() {
+        this.classList.add("active");
+        document.getElementById("lastMonth").classList.remove("active");
+        getThisMonthfunction();
+        sumArrTotal();
+        sumitemy();
+      }
+
+      //功能：月份选择，点击本月切换 上月
+      //--------------------------------------------------------------------------12
+      lastMonth.onclick=function() {
+        this.classList.add("active");
+        document.getElementById("thisMonth").classList.remove("active");
+          //循环找roomName
+          for (var i = 0; i < roomName.length; i++) {
+            //roomName[i].parentNode.parentNode.classList.remove("show");
+            roomName[i].parentNode.parentNode.setAttribute("name","hidden");
+            //获得文本,作为检索内容
+            var str= roomName[i].innerText;
+            //检索,符合条件的 即getThisMonth
+            var dateSearch = str.search(getLastMonth);//getThisMonth变量定义为本月
+            roomName[i].parentNode.children[2].setAttribute("class","arrTotal");
+            //符合条件的添加show
+            if(dateSearch >= 0){
+              //roomName[i].parentNode.parentNode.classList.add("show");
+              roomName[i].parentNode.parentNode.setAttribute("name","show");
+              roomName[i].parentNode.children[2].setAttribute("class","arrTotal-current");//获得在父级里的第三个节点的文本
+            }//if end
+          }
+          sumArrTotal();
+          sumitemy();
+      }
+
+
+
+
+      //功能：计算列表中收款的 总价sumArrTotal
+      //--------------------------------------------------------------------------12
+        function sumArrTotal() {
+          var arrTotal = document.getElementsByName("show");//找Name属性，包含show值的标签
+          var arr = new Array(arrTotal.length)
+          //转换为数组
+          for (var i = 0; i < arrTotal.length; i++) {
+              arr[i] = arrTotal[i].firstChild.children[2].innerText;//获得第一个节点，里面的第三个节点的文本.firstChild.children[2].innerText;
+              //数组相加求和
+              function sum(arr) {
+                return eval(arr.join("+"));
+              };
+          }
+          //输出求和结果
+          document.getElementById("sumArrTotal").innerText=sum(arr);
+        }sumArrTotal();
+
+
+      //功能：计算列表中收款的 已收sumitemy
+      //--------------------------------------------------------------------------12
+        function sumitemy() {
+            var itemy = document.getElementsByClassName("itemy");
+            var span = document.getElementsByTagName("span");
+            var arr = new Array(itemy.length);
+
+            //console.log(itemy.length);
+            for (var i = 0; i < itemy.length; i++) {
+              arr[i]="0";
+              if (itemy[i].children[2].className === "arrTotal-current") {
+                //console.log(true);
+                //console.log(itemy[i].children[2].innerText);
+                arr[i] = itemy[i].children[2].innerText;
+                
+                //数组相加求和
+                function sum(arr) {
+                  return eval(arr.join("+"));
+                }
+              }
+            }
+            document.getElementById("sumitemy").innerText = sum(arr);
+
+        }sumitemy();
+
+
+      //功能：计算列表中收款的 未收todo
+      //--------------------------------------------------------------------------12
+        function sumTodo() {
+            var sumitemy = document.getElementById("sumitemy").innerText;
+            var sumArrTotal = document.getElementById("sumArrTotal").innerText;
+            var sumTodo = sumArrTotal - sumitemy;
+            //console.log(sumTodo);
+            document.getElementById("sumTodo").innerText = sumTodo;
+        }sumTodo();
+
+      //更新本地缓存提示
+      //--------------------------------------------------------------------------12
+      applicationCache.onupdateready = function() {  
+          if (confirm("本地缓存已被更新,需要刷新页面来获取应用程序最新版本")) {  
+              //手动更新本地缓存，只能在onupdateready事件触发时调用  
+              applicationCache.swapCache();  
+              location.reload();  
+          }  
+      }

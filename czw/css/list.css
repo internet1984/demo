@@ -1,0 +1,326 @@
+@charset "UTF-8";
+body,
+div,
+dl,
+dt,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+li,
+ol,
+code,
+form,
+fieldset,
+legend,
+input,
+textarea,
+p,
+blockquote,
+th,
+td,
+header,
+hgroup,
+nav,
+section,
+article,
+aside,
+footer,
+figure,
+figcaption,
+menu,
+button {
+  margin: 0;
+  padding: 0;
+  font-family: "SF Pro Text", "SF Pro Icons", "PingFang SC"; }
+
+body {
+  font-size: 16px;
+  min-height: 12rem;
+  background-size: cover; }
+
+.hidden {
+  display: none; }
+
+#show,
+.show {
+  display: block !important; }
+
+.tipsEmpty {
+  position: absolute;
+  top: 1.9rem;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #666; }
+
+#returnAccount {
+  margin: 0.2rem 0.3rem;
+  padding: 0.1rem 0.3rem;
+  position: relative;
+  display: block;
+  z-index: 2;
+  width: 1rem;
+  font-size: 0.3rem;
+  text-decoration: none;
+  font-weight: bold;
+  color: #000 !important; }
+  #returnAccount::after {
+    position: absolute;
+    top: 0.39rem;
+    left: 0rem;
+    content: " ";
+    display: block;
+    width: 0.2rem;
+    height: 2px;
+    background-color: #000;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg); }
+  #returnAccount::before {
+    position: absolute;
+    top: 0.26rem;
+    left: 0rem;
+    content: " ";
+    display: block;
+    width: 0.2rem;
+    height: 2px;
+    background-color: #000;
+    -webkit-transform: rotate(135deg);
+    -ms-transform: rotate(135deg);
+    transform: rotate(135deg); }
+
+.footer {
+  background-color: rgba(225, 225, 225, 0.5);
+  overflow: hidden;
+  height: 1rem;
+  line-height: 1rem;
+  position: absolute;
+  bottom: 0;
+  width: 100%; }
+  .footer #sumitemy {
+    float: right;
+    color: #fe9c00;
+    font-weight: bold;
+    display: inline-block; }
+    .footer #sumitemy::before {
+      content: "已收￥";
+      font-weight: normal;
+      font-size: 0.25rem; }
+  .footer #sumArrTotal {
+    float: right;
+    font-weight: bold;
+    display: inline-block;
+    padding: 0 0.4rem; }
+    .footer #sumArrTotal::before {
+      content: "合计￥";
+      font-weight: normal;
+      font-size: 0.25rem; }
+  .footer #sumTodo {
+    float: right;
+    font-weight: bold;
+    display: inline-block;
+    padding: 0 0.4rem; }
+    .footer #sumTodo::before {
+      content: "未收￥";
+      font-weight: normal;
+      font-size: 0.25rem; }
+
+.pageList {
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.3rem; }
+  .pageList .warpper {
+    overflow: hidden;
+    width: 100%; }
+  .pageList .choice {
+    position: absolute;
+    top: 0.2rem;
+    left: 50%;
+    width: 4rem;
+    text-align: center;
+    margin-left: -2rem;
+    padding-bottom: 0.2rem; }
+    .pageList .choice .active {
+      color: #fff;
+      border: 1px solid #fe9c00;
+      background-color: #fe9c00; }
+    .pageList .choice span {
+      border: 1px solid #eee;
+      padding: 0.05rem 0.2rem;
+      margin: 0 3px;
+      display: inline-block;
+      background-color: #eee;
+      border-radius: 0.5rem;
+      font-size: 0.3rem; }
+  .pageList #list {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-top: 0.1rem;
+    height: calc(100vh - 2.2rem);
+    position: relative;
+    z-index: 4;
+    padding-left: 30px; }
+  .pageList li {
+    height: 1.3rem;
+    line-height: 0.7rem;
+    width: 100%;
+    background-color: #fff;
+    font-size: 0.3rem;
+    position: relative;
+    margin-bottom: 1px;
+    list-style-type: decimal-leading-zero;
+    -webkit-transition-duration: 0.2s;
+    -o-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-transition-timing-function: ease;
+    -o-transition-timing-function: ease;
+    transition-timing-function: ease;
+    color: #666;
+    font-size: 9px; }
+    .pageList li:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -10%;
+      width: 400%;
+      height: 200%;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      -webkit-transform: scale(0.5);
+      -ms-transform: scale(0.5);
+      transform: scale(0.5);
+      -webkit-transform-origin: left top;
+      -ms-transform-origin: left top;
+      transform-origin: left top;
+      border-bottom: 1px solid #ddd;
+      pointer-events: none; }
+  .pageList .list-li[name="hidden"] {
+    display: none; }
+  .pageList .itemy {
+    color: #fe9c00; }
+    .pageList .itemy .periodDateGetItem {
+      display: none; }
+    .pageList .itemy .arrTotal-current::after,
+    .pageList .itemy .arrTotal::after {
+      font-size: 0.25rem;
+      font-weight: normal;
+      content: "已收";
+      color: #666;
+      position: absolute;
+      right: 0;
+      bottom: -0.4rem;
+      width: 1rem;
+      text-align: right; }
+    .pageList .itemy .roomNamesubstr,
+    .pageList .itemy .arrTotal-current,
+    .pageList .itemy .arrTotal {
+      color: #fe9c00; }
+    .pageList .itemy .arrTotal-current::before,
+    .pageList .itemy .arrTotal::before {
+      font-size: 0.25rem;
+      content: "￥";
+      color: #fe9c00; }
+  .pageList .item .stateTime,
+  .pageList .itemn .stateTime {
+    display: none; }
+  .pageList .item .arrTotal-current::after,
+  .pageList .item .arrTotal::after,
+  .pageList .itemn .arrTotal-current::after,
+  .pageList .itemn .arrTotal::after {
+    font-size: 0.25rem;
+    font-weight: normal;
+    content: "未收";
+    color: #666;
+    position: absolute;
+    right: 0;
+    bottom: -0.4rem;
+    width: 1rem;
+    text-align: right; }
+  .pageList .item .arrTotal-current::before,
+  .pageList .item .arrTotal::before,
+  .pageList .itemn .arrTotal-current::before,
+  .pageList .itemn .arrTotal::before {
+    font-size: 0.25rem;
+    content: "￥";
+    color: #000; }
+  .pageList .left {
+    position: relative;
+    height: 1.3rem;
+    line-height: 1;
+    width: 100%;
+    float: left;
+    color: #000; }
+    .pageList .left .roomName {
+      display: none; }
+    .pageList .left .roomNamesubstr {
+      position: absolute;
+      left: 0.1rem;
+      top: 0.2rem;
+      font-size: 0.35rem; }
+    .pageList .left .arrTotal-current,
+    .pageList .left .arrTotal {
+      position: absolute;
+      right: 0.4rem;
+      top: 0.2rem;
+      font-weight: bold;
+      font-size: 0.35rem; }
+    .pageList .left .periodDateGetItem {
+      position: absolute;
+      left: 0.1rem;
+      bottom: 0.35rem;
+      font-size: 0.27rem;
+      color: #666; }
+    .pageList .left .stateTime {
+      position: absolute;
+      left: 0.1rem;
+      bottom: 0.35rem;
+      font-size: 0.27rem;
+      color: #666; }
+  .pageList .right {
+    position: absolute;
+    width: 4rem;
+    height: 1.3rem;
+    line-height: 1;
+    top: -1px;
+    overflow: hidden;
+    bottom: 0;
+    right: -4rem;
+    color: #000;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    font-size: 0.35rem; }
+    .pageList .right span {
+      display: inline-block;
+      -webkit-box-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+      color: transparent;
+      margin: 0;
+      line-height: 1.3rem;
+      position: relative;
+      color: transparent; }
+      .pageList .right span::before {
+        pointer-events: none;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        text-align: center; }
+    .pageList .right .removeItem {
+      background-color: #fe3b30; }
+      .pageList .right .removeItem::before {
+        content: "删除"; }
+    .pageList .right .roomStateY {
+      background-color: #fe9c00; }
+      .pageList .right .roomStateY::before {
+        content: "已收"; }
+    .pageList .right .roomStateN {
+      background-color: #bbb; }
+      .pageList .right .roomStateN::before {
+        content: "未收"; }

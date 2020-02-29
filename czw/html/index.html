@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html data-use-rem="" manifest="demo.appcache">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+    <meta content="房租计算器" name="description">
+    <link rel="stylesheet" href="../css/home.css">
+    <title>房租计算器</title>
+    <script src="js/moment.js"></script>
+    <script src="js/html2canvas.min.js"></script>
+    <script src="js/canvas2image.js"></script>
+    <script src="js/base64.js"></script>
+    <script>
+      (function (doc, win) {
+        var docEl = doc.documentElement,
+          resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+          recalc = function () {
+            var clientWidth = docEl.clientWidth;
+            if (!clientWidth) return;
+            docEl.style.fontSize = 100 * (clientWidth / 750) + 'px';
+          };
+      
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+        recalc();
+      })(document, window);
+      
+    </script>
+  </head>
+  <body>
+    <div id="navAccount" onclick="replaceDoc()">账单</div>
+    <div class="main" id="content">
+      <div class="list">
+        <h1><strong id="pushdate">房租账单,</strong>
+          <p class="inputValue" id="roomnumberValue" onclick="roomnumberValue()"></p><strong>房</strong>
+        </h1>
+        <!--用于保存的数据，由 periodDateThis+periodDateLast组成-->
+        <div class="hidden" id="periodDatesetItem"></div>
+        <div id="periodDateGetItem">周期</div>
+        <div class="date">
+          <div>
+            <p id="dateThisY"></p>
+          </div>
+          <div>
+            <p id="dateThisM"></p>
+          </div>
+          <div>
+            <p id="dateThisD"></p>
+          </div>
+          <div>
+            <p id="dateLastY"></p>
+          </div>
+          <div>
+            <p id="dateLastM"></p>
+          </div>
+          <div>
+            <p id="dateLastD"></p>
+          </div>
+        </div>
+        <!--是否已收租-->
+        <div class="hidden" id="roomStateCont"></div>
+        <!--到账时间,收到钱的时间-->
+        <div class="hidden" id="accomplishDate"></div>
+        <!--账单生成时间-->
+        <div class="hidden" id="accountDate"></div>
+        <ul>
+          <li>
+            <h3>房租</h3>
+            <div class="optiondl">
+              <div class="optiondd">
+                <p id="rentValue">0</p>
+                <!--p#rentValue.inputValue-->
+              </div>
+            </div>
+          </li>
+          <li>
+            <h3>卫生费</h3>
+            <div class="optiondl">
+              <div class="optiondd">
+                <p id="cleanValue">10</p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <h3>网费</h3>
+            <div class="optiondl">
+              <div class="optiondd">
+                <p id="networkValue">40</p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <h3>其他</h3>
+            <div class="optiondl">
+              <div class="optiondd">
+                <p id="otherValue">0</p>
+              </div>
+            </div>
+          </li>
+          <li class="custom">
+            <h3>电费</h3>
+            <div class="optiondl">
+              <div class="optiondd"><span>本月</span>
+                <p id="powerValueBefore">0</p>
+              </div>
+              <div class="symboldd">-</div>
+              <div class="optiondd"><span>上月</span>
+                <p id="powerValueAfter">0</p>
+              </div>
+              <div class="symboldd">*</div>
+              <div class="optiondd"><span>度/元 </span>
+                <p id="powerValuePrice">1.5</p>
+              </div>
+              <div class="symboldd">
+                <div class="powerPrice" id="powerPrice"></div>
+              </div>
+            </div>
+          </li>
+          <li class="custom">
+            <h3>水费</h3>
+            <div class="optiondl">
+              <div class="optiondd"><span>本月</span>
+                <p id="waterValueBefore">0</p>
+              </div>
+              <div class="symboldd">-</div>
+              <div class="optiondd"><span>上月</span>
+                <p id="waterValueAfter">0</p>
+              </div>
+              <div class="symboldd">*</div>
+              <div class="optiondd"><span>吨/元</span>
+                <p id="waterValuePrice">3</p>
+              </div>
+              <div class="symboldd">
+                <div class="waterPrice" id="waterPrice"></div>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="mod-total">
+          <div id="total"></div>
+        </div>
+      </div>
+    </div>
+    <div id="share-btn">保存<img id="share-img"></div>
+    <div id="images">预览</div>
+    <div class="keyboard" id="keyboard">
+      <dl class="keyboard-number">
+        <dd>A</dd>
+        <dd>1</dd>
+        <dd>2</dd>
+        <dd>3</dd>
+        <dd>B</dd>
+        <dd>4</dd>
+        <dd>5</dd>
+        <dd>6</dd>
+        <dd>C</dd>
+        <dd>7</dd>
+        <dd>8</dd>
+        <dd>9</dd>
+        <dd>D</dd>
+        <dd>0</dd>
+        <dd id="decimalPoint">.</dd>
+      </dl>
+      <dl class="keyboard-function">
+        <dt onclick="del()">删除</dt>
+        <dt id="replaceDoc">清空</dt>
+      </dl>
+    </div>
+    <script>
+      //跳转阻止后退到上个页面，没有历史记录
+      function replaceDoc(){
+          window.location.replace("list.html");
+          localStorage.removeItem("roomZero");
+      }   
+      
+      //获取英文月份
+      //--------------------------------------------------------------------------
+        var EnMonth=new Date()
+        var month=new Array(12)
+        month[0]="Jan"//1月
+        month[1]="Feb"
+        month[2]="Mar"
+        month[3]="Apr"
+        month[4]="May"
+        month[5]="Jun"
+        month[6]="Jul"
+        month[7]="Aug"
+        month[8]="Sep"
+        month[9]="Oct"
+        month[10]="Nov"
+        month[11]="Dec"//12月
+        var enMonth = month[EnMonth.getMonth()];
+        
+      //功能：保存数据savedData localStorage.setItem
+      //--------------------------------------------------------------------------
+      function savedData(){
+          var room = document.getElementById("roomnumberValue").innerText;//房号
+          var rent = parseInt(document.getElementById("rentValue").innerText);//房租[0]
+          var clean = parseFloat(document.getElementById("cleanValue").innerText);//卫生费[1]
+          var network = parseInt(document.getElementById("networkValue").innerText);//网费[2]
+          //电
+          var powerBefore = parseInt(document.getElementById("powerValueBefore").innerText);//电上次[3]
+          var powerAfter = parseInt(document.getElementById("powerValueAfter").innerText);//电本次[4]
+          var powerPrice = parseFloat(document.getElementById("powerValuePrice").innerText);//电单价[5]
+          //水
+          var waterBefore = parseInt(document.getElementById("waterValueBefore").innerText);//水上次[6]
+          var waterAfter = parseInt(document.getElementById("waterValueAfter").innerText);//水本次[7]
+          var waterPrice = parseFloat(document.getElementById("waterValuePrice").innerText);//水单价[8]
+          //是否已收租
+          var roomStateCont = document.getElementById("roomStateCont").innerText;//roomStateY为已收租[9]
+          //到账时间,收到钱的时间
+          var accomplishDate = document.getElementById("accomplishDate").innerText;//[10]
+          //生成时间（写单时间）
+          var curDate = new Date();
+          var accountDate =curDate.toLocaleDateString(); //2020/2/7年月日[11]
+          //账单周期
+          var periodDatesetItem = document.getElementById("periodDatesetItem").textContent;//[12]
+          //其他费用
+          var other = document.getElementById("otherValue").textContent;//[13]
+          //避免保存的时候创建，空房号 或 0房号，导致的各数值被重置，做了以下判断
+          if(room ===""){//当房号为空的时候，房间名称保存为roomEmpty
+            localStorage.setItem("roomEmpty","")
+          }else if(room ==="0"){//当房号为零的时候，房间名称保存为roomZero
+            localStorage.setItem("roomZero","")
+          }else{
+            //获取用户输入的值，保存到 localStorage。注意：顺序不要随意改变，会影响到localStorage.getItem提取数组
+            localStorage.setItem(enMonth+room,rent+","+clean+","+network+","+powerBefore+","+powerAfter+","+powerPrice+","+waterBefore+","+waterAfter+","+waterPrice+","+roomStateCont+","+accomplishDate+","+accountDate+","+periodDatesetItem+","+other,);
+          }
+      }
+      
+      //功能：输入房号时，执行数据拉取
+      //技术：用DOMSubtreeModified监听标签内容变化   DOMSubtreeModified 会监听持续执行tr的ue状态，导致每秒持续拉取数据来覆盖输入数字。
+      //解决办法：DOMSubtreeModified监听 > #roomnumberValue是否包含.inputValue 是的话 数据拉取
+      //--------------------------------------------------------------------------
+      document.getElementById('roomnumberValue').addEventListener("DOMSubtreeModified", function(){
+            let mydivroom = document.getElementById("roomnumberValue");
+            if( mydivroom.classList.contains("inputValue") ){
+                  //数据拉取：js 数组,字符串,json互相转换 https://www.cnblogs.com/zhengyiqun1992/p/10683760.html
+                  var room = document.getElementById("roomnumberValue").innerText;//房号
+                  var str = localStorage.getItem(enMonth+room);
+                  //console.log(room);
+                  var arrVal = str.split(',');
+                  //document.getElementById("arrayCont").innerHTML=arrVal;
+                  //输入房号时，执行数据拉取
+                  document.getElementById("rentValue").innerHTML=arrVal[0];//房租
+                  document.getElementById("cleanValue").innerHTML=arrVal[1];//卫生费
+                  document.getElementById("networkValue").innerHTML=arrVal[2];//网费
+                  document.getElementById("powerValueBefore").innerHTML=arrVal[3];//电上次
+                  document.getElementById("powerValueAfter").innerHTML=arrVal[4];//电本次
+                  document.getElementById("powerValuePrice").innerHTML=arrVal[5];//电单价
+                  document.getElementById("waterValueBefore").innerHTML=arrVal[6];//水上次
+                  document.getElementById("waterValueAfter").innerHTML=arrVal[7];//水本次
+                  document.getElementById("waterValuePrice").innerHTML=arrVal[8];//水单价
+                  document.getElementById("waterValuePrice").innerHTML=arrVal[8];//水单价
+                  document.getElementById("roomStateCont").innerHTML=arrVal[9];//是否已收租
+                  document.getElementById("accomplishDate").innerHTML=arrVal[10];
+                  document.getElementById("accountDate").innerHTML=arrVal[11];//账单生成时间
+                  document.getElementById("periodDateGetItem").innerText=arrVal[12];//收租周期
+                  document.getElementById("otherValue").innerText=arrVal[13];//其他费用
+            }
+      }, false);
+      
+      //功能：各项目数值相加计算 calculate()
+      //--------------------------------------------------------------------------
+      function calculate(){
+          var room = parseFloat(document.getElementById("roomnumberValue").innerText);//房号
+          var rent = parseInt(document.getElementById("rentValue").innerText);//房租
+          var clean = parseFloat(document.getElementById("cleanValue").innerText);//卫生费
+          var network = parseInt(document.getElementById("networkValue").innerText);//网费
+          //电
+          var powerBefore = parseInt(document.getElementById("powerValueBefore").innerText);//上次
+          var powerAfter = parseInt(document.getElementById("powerValueAfter").innerText);//本次
+          var powerPrice = parseFloat(document.getElementById("powerValuePrice").innerText);//单价
+          var powerSubtraction =(powerBefore-powerAfter);
+          var sPower = powerSubtraction*powerPrice.toFixed(1);//电费总价
+          //电总价 html节点输出
+          document.getElementById("powerPrice").innerHTML=sPower;
+          //水
+          var waterBefore = parseInt(document.getElementById("waterValueBefore").innerText);//上次
+          var waterAfter = parseInt(document.getElementById("waterValueAfter").innerText);//本次
+          var waterPrice = parseFloat(document.getElementById("waterValuePrice").innerText);//单价
+          var waterSubtraction =(waterBefore-waterAfter);
+          var sWater = waterSubtraction*waterPrice.toFixed(1);//水费总价
+          //水总价 html节点输出
+          document.getElementById("waterPrice").innerHTML=sWater;
+          var other = parseFloat(document.getElementById("otherValue").innerText);//其他
+          //总价计算
+          var total = (sPower+sWater+rent+network+clean+other).toFixed(1);
+          var rentNetworkClean = (rent+network+clean).toFixed(1);
+          document.getElementById("total").innerHTML="<span>合计</span><strong>￥</strong>"+String(total);
+      }
+      
+      setTimeout(function(){
+          calculate();
+      }, 100);
+      
+      //当输入框p，被点击的时候执行两个函数EventListener1与EventListener2
+      //同个元素添加多个同类型的事件句柄，如：两个 "click" 事件, 实现类名click当前状态添加
+      //--------------------------------------------------------------------------
+      function addInputValue(){
+        var pPositions = document.getElementsByTagName("p");
+        var tipsId = document.getElementById("tips");
+        //循环找P标签
+        for (var i = 0; i < pPositions.length; i++) {
+          var positionValue = pPositions[i];
+          positionValue.addEventListener("click", EventListener1);//添加事件监听1，指向函数EventListener1
+          function EventListener1() {// 声明一个函数：start
+           //循环找P标签
+            for (var i = 0; i < pPositions.length; i++) {
+              pPositions[i].classList.remove("inputValue");//循环查找后删除类名
+              var pText = pPositions[i].innerText;
+              if(pText==""){
+                pPositions[i].innerText="0"
+              }
+            }
+          }//函数：end
+          positionValue.addEventListener("click", EventListener2);//添加事件监听2，指向函数EventListener2
+          function EventListener2() {// 声明一个函数：start
+            this.classList.add("inputValue");//自身添加类名
+            var txt = this.innerText;
+            //- if (txt == '0') {
+            //-     this.innerText=""
+            //-   }
+            this.innerText=""
+          }//函数：end
+        }//for循环找P标签:end
+      }//function addInputValue():end
+      addInputValue();
+      
+      //赋值:点击DD标签，把this.innerText赋值到getElementsByClassName("inputValue")[0]
+      //audio播放:点击时，this.innerText赋值到audio的路径
+      //每次点击DD标签的时候执行计算 calculate();
+      //--------------------------------------------------------------------------
+      function replaceValue(){
+        var numbers = document.getElementsByTagName("dd");
+        for (var i = 0; i < numbers.length; i++) {
+          var numValue = numbers[i];
+          numValue.onclick = function() { 
+            document.getElementsByClassName("inputValue")[0].innerText+= this.innerText;
+            var n = this.innerText;
+            /* 待优化，但为 点 的时候，把N转为数字，目前使用 decimalPoint click 来临时替代
+            ***************************************************************************************************************************************************************/
+            //audio播放
+            var audio = new Audio("../zh/"+n+".mp3");
+            audio.play();
+            //每次入数字的时候计算
+            calculate();
+          }
+        }
+      }
+      replaceValue();
+      
+      //因为click事件之前被占用，所以添加addEventListener添加事件监听，来实现次触发click
+      //--------------------------------------------------------------------------
+      document.getElementById('decimalPoint').addEventListener("click", EventListenerDecimalPoint);//添加事件监听1，指向函数EventListener1
+      function EventListenerDecimalPoint() {// 声明一个函数EventListenerDecimalPoint：start
+        //audio播放
+        var audio = new Audio("../zh/spot.mp3");
+        audio.play();
+      }//函数EventListenerDecimalPoint：end
+      
+      //del 删除最后一个字符
+      //--------------------------------------------------------------------------
+      function del(){
+        var delInput = document.getElementsByClassName("inputValue")[0].innerText;
+        var delValue = delInput.substring(0, delInput.length - 1);
+        document.getElementsByClassName("inputValue")[0].innerText= delValue;
+        calculate();//删除的时候计算
+        //audio播放
+        var audio = new Audio("../zh/del.mp3");
+        audio.play();
+      };
+      
+      //清空  因为click事件之前被占用，所以添加addEventListener添加事件监听，来实现次触发click
+      //--------------------------------------------------------------------------
+      document.getElementById('replaceDoc').addEventListener("click", EventListenerReplaceDoc);//添加事件监听1，指向函数EventListener1
+      function EventListenerReplaceDoc() {// 声明一个函数EventListenerDecimalPoint：start
+        //audio播放
+        var audio = new Audio("../zh/empty.mp3");
+        audio.play();
+        //添加localStorage.setItem原因参考：tYMDHMS10<=arrVal1，避免房间无法清空。
+        localStorage.setItem("LastClick","0,0",);
+      
+        //当audio播放完毕的时候，执行location.reload();
+        audio.loop = false;
+        audio.addEventListener('ended', function () {  
+              //alert('over');
+              location.reload();
+        }, false);
+      }
+      
+      // 获取当前时间,引用日期处理类库moment.js
+      //--------------------------------------------------------------------------
+        //  获取当前年月日时分秒
+        var tYMDHMS=moment().subtract('months').format('YYYYMMDDHHmmss');
+        //console.log(tYMDHMS);
+        //  上月
+        var t2Y=moment().subtract(1, 'months').format('YYYY');
+        var t2M=moment().subtract(1, 'months').format('MM');
+        //通过daysInMonth 获取最后一天
+        var t2D=moment().subtract(1,'months').daysInMonth();
+        //  本月
+        var t3Y=moment().subtract('months').format('YYYY');
+        var t3M=moment().subtract('months').format('MM');
+        //通过daysInMonth 获取最后一天
+        var t3D=moment().subtract('months').daysInMonth();
+        //  下月
+        var t4Y=moment().subtract(-1, 'months').format('YYYY');
+        var t4M=moment().subtract(-1, 'months').format('MM');
+        //通过daysInMonth 获取最后一天
+        var t4D=moment().subtract(-1,'months').daysInMonth();
+        //  当前时间
+        //var t1=moment().format('YYYY.MM.DD HH:mm');
+        var today=moment().format('DD');
+        // 判断:当今天小于27日,展示上月及上上月，否则展示本月及上月
+        if(today < 26){
+          dateThisY.innerHTML =t2Y;
+          dateThisM.innerHTML =t2M;
+          dateThisD.innerHTML =t2D;
+          dateLastY.innerText =t3Y;
+          dateLastM.innerText =t3M;
+          dateLastD.innerText =t3D;
+        }else{
+          dateThisY.innerHTML =t3Y;
+          dateThisM.innerHTML =t3M;
+          dateThisD.innerHTML =t3D;
+          dateLastY.innerText =t4Y;
+          dateLastM.innerText =t4M;
+          dateLastD.innerText =t4D;
+        }
+      
+      //点击share-img时，保存数据
+      //长按触摸事件:touchstart触摸开始，多点触控，后面的手指同样会触发
+      //--------------------------------------------------------------------------
+      var objTouchstart = document.getElementById('share-img');   
+      objTouchstart.addEventListener('touchstart', function(event) {   
+          // 如果这个元素的位置内只有一个手指的话   
+          if (event.targetTouches.length == 1) {   
+      　　　　 //event.preventDefault();// 阻止浏览器默认事件    
+              var touch = event.targetTouches[0];
+              //获取日期数据，保存到数据库, 因为直接保存数据格式有换行等格式问题所以要做一下转换处理
+              var periodDateThisY = document.getElementById("dateThisY").innerText;
+              var periodDateThisM = document.getElementById("dateThisM").innerText;
+              var periodDateThisD = document.getElementById("dateThisD").innerText;
+              var periodDateLastY = document.getElementById("dateLastY").innerText;
+              var periodDateLastM = document.getElementById("dateLastM").innerText;
+              var periodDateLastD = document.getElementById("dateLastD").innerText;
+              var periodDatesetItem = periodDateThisY+"/"+periodDateThisM+"/"+periodDateThisD+" - "+periodDateLastY+"/"+periodDateLastM+"/"+periodDateLastD;
+              document.getElementById("periodDatesetItem").innerText = periodDatesetItem;
+              //保存数据 localStorage.setItem
+              savedData();
+            }   
+      }, false);
+      
+      // 每点击一次id keyboard就截 id content图一次，转换为base64保存到share-img
+      //--------------------------------------------------------------------------
+      var btnSave = document.getElementById("keyboard");
+      btnSave.onclick = function(){
+        saveImg();
+      }
+      //saveImg() 生成canvas图形,转换为base64保存到share-img
+      var content = document.getElementById("content");// 截图区域
+      function saveImg(){  
+        html2canvas(content, {
+          onrendered: function(canvas) {
+            //添加属性
+            canvas.setAttribute('id','thecanvas');
+            //读取属性值
+            // var value= canvas.getAttribute('id');
+            document.getElementById('images').innerHTML = '';
+            document.getElementById('images').appendChild(canvas);
+          }
+        });
+        setTimeout(function(){
+          var oCanvas = document.getElementById("thecanvas");
+          /*自动保存为png*/
+          // 获取图片资源
+          var img_data1 = Canvas2Image.saveAsPNG(oCanvas, true).getAttribute('src');
+          var pngimg = document.getElementById('share-img');
+          pngimg.setAttribute("src",img_data1);
+        }, 100);
+      }saveImg();
+      
+      //功能：拉取数据库最后一次点击的房号 Last
+      //--------------------------------------------------------------------------
+       function LastClick(){
+                  var room = document.getElementById("roomnumberValue").innerText;//房号
+                  var str = localStorage.getItem("LastClick");
+                  var arrVal = str.split(',');
+                  var tYMDHMS10 = parseInt(tYMDHMS)-100;//减少10秒
+                  var arrVal1 = parseInt(arrVal[1]);
+                  //截取前三个字符
+                  var string=arrVal[0];
+                  var keySubstr = string.substr(3,15);//截取后的房间号 Jun201 > 201
+                  //- console.log(str);
+                  //console.log("t "+tYMDHMS10);
+                  //console.log("a "+arrVal1);
+                  //如果最后一次保存时间 小于 首页tYMDHMS10的时间 就执行，把房号值给roomnumberValue
+                  if(tYMDHMS10>arrVal1){
+                    //console.log("dayu");
+                  }else if(tYMDHMS10<=arrVal1){
+                    //console.log("xiaoyu");
+                    document.getElementById("roomnumberValue").innerText = keySubstr;//房号
+                  }
+      }LastClick();
+      
+      //更新本地缓存提示
+      //--------------------------------------------------------------------------
+      applicationCache.onupdateready = function() {  
+          if (confirm("本地缓存已被更新,需要刷新页面来获取应用程序最新版本")) {  
+              //手动更新本地缓存，只能在onupdateready事件触发时调用  
+              applicationCache.swapCache();  
+              location.reload();  
+          }  
+      }
+    </script>
+  </body>
+</html>

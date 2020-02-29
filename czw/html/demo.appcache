@@ -1,0 +1,32 @@
+CACHE MANIFEST
+# v1.2.888888
+
+CACHE:
+index.html
+list.html
+../css/list.css
+../css/home.css
+js/html2canvas.min.js
+js/canvas2image.js
+js/base64.js
+js/moment.js
+../zh/0.mp3
+../zh/1.mp3
+../zh/2.mp3
+../zh/3.mp3
+../zh/4.mp3
+../zh/5.mp3
+../zh/6.mp3
+../zh/7.mp3
+../zh/8.mp3
+../zh/9.mp3
+../zh/A.mp3
+../zh/B.mp3
+../zh/C.mp3
+../zh/D.mp3
+../zh/calculation.mp3
+../zh/del.mp3
+../zh/empty.mp3
+../zh/spot.mp3
+
+NETWORK: 
