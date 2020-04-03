@@ -1,44 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>灰色图像滤镜 grayscale</title>
     <style>
-      body {
-        color: #fff;
-        opacity: 0.8;
+     img,div{
+        filter: grayscale(100%); 
       }
-      li {
-        margin: 1px;
+      div{
+        width: 300px;
+        height: 300px;
+        background-repeat: no-repeat;
       }
-      .blue {
-        background-color: blue;
-      }
-      .red {
-        background-color: red;
-      }
-      .y::after {
-        content: "我是Y";
-      }
-      .n:after {
-        content: "我是N";
+      .original{
+        filter: none!important; 
       }
     </style>
   </head>
   <body>
-    <h1>用原生JS，算出，blue及red 分别有多少Y及N 的类名。</h1>
-    <ul>
-      <li class="blue"><div class="y"></div></li>
-      <li class="blue"><div class="n"></div></li>
-      <li class="blue"><div class="n"></div></li>
-      <li class="blue"><div class="y"></div></li>
-      <li class="red"><div class="n"></div></li>
-      <li class="red"><div class="y"></div></li>
-      <li class="blue"><div class="n"></div></li>
-      <li class="blue"><div class="n"></div></li>
-      <li class="red"><div class="y"></div></li>
-      <li class="red"><div class="y"></div></li>
-    </ul>
+<h1>原图</h1>
+    <img class="original" src="https://www.youmeitu.com/Upload/20200312/1583987657801952.jpg"/><hr/>
+    <h1>img </h1>
+    <p>filter: grayscale(100%); </p>
+<img src="https://www.youmeitu.com/Upload/20200312/1583987657801952.jpg"/><hr/>
+<h1>background</h1>
+<p>filter: grayscale(100%); </p>
+<div  style="background-image: url(https://www.youmeitu.com/Upload/20200312/1583987657801952.jpg);"></div>
+
+<p>filter: grayscale(50%); </p>
+<div  style="filter: grayscale(50%);background-image: url(https://www.youmeitu.com/Upload/20200312/1583987657801952.jpg);"></div>
+
+<p>filter: grayscale(80%); </p>
+<div  style="filter: grayscale(80%);background-image: url(https://www.youmeitu.com/Upload/20200312/1583987657801952.jpg);"></div>
+
+
   </body>
 </html>
